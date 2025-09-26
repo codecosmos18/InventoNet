@@ -2,15 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory Management</title>
+    <title>InventoNet - Inventory Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .navbar, .card, .table {
+            border-radius: 15px;
+        }
+        .navbar {
+            background-color: #ffffffcc !important;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .card {
+            background-color: #ffffffcc;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: #2575fc;
+            border: none;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: #6a11cb;
+        }
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .btn-warning {
+            background: #ffc107;
+            border: none;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+            color: #212529;
+        }
+        .btn-danger {
+            background: #dc3545;
+            border: none;
+        }
+        .btn-danger:hover {
+            background: #bd2130;
+        }
+        table {
+            background-color: #ffffffcc;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        h4 {
+            color: #fff;
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
 </head>
-<body class="p-4">
+<body>
 
 <!-- Navbar with Logout -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+<nav class="navbar navbar-expand-lg">
   <div class="container-fluid">
-    <span class="navbar-brand mb-0 h1">📦 Inventory Management</span>
+    <span class="navbar-brand mb-0 h1">📦 InventoNet Inventory</span>
     <div class="d-flex ms-auto">
       <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
     </div>
@@ -19,7 +80,7 @@
 
 <div class="container">
     <!-- Add Product Form -->
-    <div class="card mb-4 p-3">
+    <div class="card mb-4">
         <form method="POST" class="row g-3">
             <div class="col-md-3">
                 <input type="text" name="name" class="form-control" placeholder="Name" required>
@@ -60,13 +121,10 @@
                 <td>{{ p.SellingPrice }}</td>
                 <td>{{ p.Quantity * p.CostPrice }}</td>
                 <td>
-                    <!-- Add Stock Button -->
                     <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#stockModal" 
                         onclick="setStockModal({{ p.Id }}, '{{ p.Name }}', 'add')">Add Stock</button>
-                    <!-- Remove Stock Button -->
                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#stockModal" 
                         onclick="setStockModal({{ p.Id }}, '{{ p.Name }}', 'remove')">Remove Stock</button>
-                    <!-- Delete -->
                     <a href="?action=delete&id={{ p.Id }}" class="btn btn-danger btn-sm">Delete</a>
                 </td>
             </tr>
