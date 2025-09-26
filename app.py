@@ -30,30 +30,31 @@ def index():
         conn.commit()
         return redirect(url_for("index"))
 
-    # Handle Stock Add/Remove/Delete via query params
-    action = request.args.get("action")
-    product_id = request.args.get("id")
-    if action and product_id:
+    # Handle Stock Add/Remove
+    if request.method == "POST" and ("add_stock" in request.form or "remove_stock" in request.form):
+        product_id = int(request.form["product_id"])
+        qty_change = int(request.form["qty_change"])
         cursor.execute("SELECT Quantity FROM Products WHERE Id=%s", (product_id,))
         product = cursor.fetchone()
         if product:
             qty = product["Quantity"]
-            if action == "add_stock":
-                add_qty = int(request.args.get("qty", 0))
-                qty += add_qty
-            elif action == "remove_stock":
-                remove_qty = int(request.args.get("qty", 0))
-                if remove_qty <= qty:
-                    qty -= remove_qty
-            elif action == "delete":
-                cursor.execute("DELETE FROM Products WHERE Id=%s", (product_id,))
-                conn.commit()
-                return redirect(url_for("index"))
+            if "add_stock" in request.form:
+                qty += qty_change
+            elif "remove_stock" in request.form:
+                qty = max(0, qty - qty_change)  # prevent negative stock
             cursor.execute("UPDATE Products SET Quantity=%s WHERE Id=%s", (qty, product_id))
             conn.commit()
-            return redirect(url_for("index"))
+        return redirect(url_for("index"))
 
-    # Fetch products for display
+    # Handle Delete
+    action = request.args.get("action")
+    product_id = request.args.get("id")
+    if action == "delete" and product_id:
+        cursor.execute("DELETE FROM Products WHERE Id=%s", (product_id,))
+        conn.commit()
+        return redirect(url_for("index"))
+
+    # Fetch products
     cursor.execute("SELECT * FROM Products")
     products = cursor.fetchall()
     overall_total = sum(p["Quantity"] * p["CostPrice"] for p in products)
