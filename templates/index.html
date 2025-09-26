@@ -7,9 +7,17 @@
 </head>
 <body class="p-4">
 
-<div class="container">
-    <h1 class="mb-4">📦 Inventory Management</h1>
+<!-- Navbar with Logout -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">📦 Inventory Management</span>
+    <div class="d-flex ms-auto">
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+    </div>
+  </div>
+</nav>
 
+<div class="container">
     <!-- Add Product Form -->
     <div class="card mb-4 p-3">
         <form method="POST" class="row g-3">
@@ -106,3 +114,5 @@ function setStockModal(id, name, type) {
     }
 }
 </script>
+</body>
+</html>
