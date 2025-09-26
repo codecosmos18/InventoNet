@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Inventory Management</title>
+    <style>
+        table { border-collapse: collapse; width: 80%; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Inventory Management</h1>
+
+    <form method="post">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="number" name="quantity" placeholder="Quantity" required>
+        <input type="number" step="0.01" name="cost" placeholder="Cost Price" required>
+        <input type="number" step="0.01" name="selling" placeholder="Selling Price" required>
+        <button type="submit" name="add_product">Add Product</button>
+    </form>
+
+    <h2>Products</h2>
+    <table>
+        <tr>
+            <th>Name</th><th>Quantity</th><th>CostPrice</th><th>SellingPrice</th><th>Total</th><th>Actions</th>
+        </tr>
+        {% for p in products %}
+        <tr>
+            <td>{{ p.Name }}</td>
+            <td>{{ p.Quantity }}</td>
+            <td>{{ p.CostPrice }}</td>
+            <td>{{ p.SellingPrice }}</td>
+            <td>{{ p.Quantity * p.CostPrice }}</td>
+            <td>
+                <a href="?action=add_stock&id={{ p.Id }}&qty=1">+1 Stock</a>
+                <a href="?action=remove_stock&id={{ p.Id }}&qty=1">-1 Stock</a>
+                <a href="?action=delete&id={{ p.Id }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Overall Inventory Value: {{ overall_total }}</h3>
+</body>
+</html>
