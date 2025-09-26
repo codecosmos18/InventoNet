@@ -24,56 +24,89 @@
             padding: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-        .btn-primary {
-            background: #2575fc;
-            border: none;
-            font-weight: 600;
-        }
-        .btn-primary:hover {
-            background: #6a11cb;
-        }
-        .btn-success {
-            background: #28a745;
-            border: none;
-        }
-        .btn-success:hover {
-            background: #1e7e34;
-        }
-        .btn-warning {
-            background: #ffc107;
-            border: none;
-            color: #212529;
-        }
-        .btn-warning:hover {
-            background: #e0a800;
-            color: #212529;
-        }
-        .btn-danger {
-            background: #dc3545;
-            border: none;
-        }
-        .btn-danger:hover {
-            background: #bd2130;
-        }
+        .btn-primary { background: #2575fc; border: none; font-weight: 600; }
+        .btn-primary:hover { background: #6a11cb; }
+        .btn-success { background: #28a745; border: none; }
+        .btn-success:hover { background: #1e7e34; }
+        .btn-warning { background: #ffc107; border: none; color: #212529; }
+        .btn-warning:hover { background: #e0a800; color: #212529; }
+        .btn-danger { background: #dc3545; border: none; }
+        .btn-danger:hover { background: #bd2130; }
         table {
             background-color: #ffffffcc;
             box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-        h4 {
-            color: #fff;
-            text-align: right;
-            margin-top: 20px;
+        h4 { color: #fff; text-align: right; margin-top: 20px; }
+        .calculator-btn {
+            font-size: 18px;
+            margin-left: 10px;
         }
+
+        /* Floating compact calculator */
+       #calculator {
+    position: absolute;
+    top: 100px;
+    right: 50px;
+    width: 255px; /* increased from 220px */
+    background: #ffffffcc;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    padding: 10px;
+    z-index: 1000;
+    cursor: move;
+    display: none;
+}
+
+        #calculator-header {
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 5px;
+            user-select: none;
+        }
+        #calcScreen {
+            width: 100%;
+            height: 40px;
+            text-align: right;
+            padding: 5px;
+            font-size: 16px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .calc-container {
+            display: flex;
+        }
+        .calc-numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 55px); /* slightly wider buttons */
+    gap: 5px;
+}
+       .calc-operators {
+    display: grid;
+    grid-template-rows: repeat(5, 50px);
+    margin-left: 5px;
+    gap: 5px;
+}
+       #calculator button {
+    width: 55px; /* match the new grid */
+    height: 50px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+        .btn-wide {
+    width: 78px; /* adjust wide buttons accordingly */
+}
     </style>
 </head>
 <body>
 
-<!-- Navbar with Logout -->
+<!-- Navbar with Logout & Calculator -->
 <nav class="navbar navbar-expand-lg">
   <div class="container-fluid">
     <span class="navbar-brand mb-0 h1">📦 InventoNet Inventory</span>
     <div class="d-flex ms-auto">
-      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">Logout</a>
+      <button class="btn btn-outline-secondary calculator-btn" onclick="toggleCalculator()">🧮</button>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger ms-2">Logout</a>
     </div>
   </div>
 </nav>
@@ -156,6 +189,36 @@
   </div>
 </div>
 
+<!-- Floating Compact Calculator -->
+<div id="calculator">
+    <div id="calculator-header">Calculator</div>
+    <input type="text" id="calcScreen" readonly>
+    <div class="calc-container">
+        <div class="calc-numbers">
+            <button onclick="appendCalc('7')">7</button>
+            <button onclick="appendCalc('8')">8</button>
+            <button onclick="appendCalc('9')">9</button>
+            <button onclick="appendCalc('4')">4</button>
+            <button onclick="appendCalc('5')">5</button>
+            <button onclick="appendCalc('6')">6</button>
+            <button onclick="appendCalc('1')">1</button>
+            <button onclick="appendCalc('2')">2</button>
+            <button onclick="appendCalc('3')">3</button>
+            <button onclick="appendCalc('0')">0</button>
+            <button onclick="appendCalc('.')">.</button>
+            <button onclick="percentage()" class="btn btn-warning">%</button>
+            <button onclick="clearCalc()" class="btn btn-danger">C</button>
+        </div>
+        <div class="calc-operators">
+            <button onclick="appendCalc('+')">+</button>
+            <button onclick="appendCalc('-')">-</button>
+            <button onclick="appendCalc('*')">*</button>
+            <button onclick="appendCalc('/')">/</button>
+            <button onclick="calculate()" class="btn btn-success">=</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function setStockModal(id, name, type) {
@@ -169,6 +232,59 @@ function setStockModal(id, name, type) {
         document.getElementById("stockModalTitle").innerText = "Remove Stock from " + name;
         document.getElementById("modal_add_btn").classList.add('d-none');
         document.getElementById("modal_remove_btn").classList.remove('d-none');
+    }
+}
+
+// Calculator functions
+function appendCalc(val) { document.getElementById("calcScreen").value += val; }
+function calculate() {
+    try { document.getElementById("calcScreen").value = eval(document.getElementById("calcScreen").value); }
+    catch { alert("Invalid calculation"); }
+}
+function clearCalc() { document.getElementById("calcScreen").value = ''; }
+function percentage() {
+    try {
+        let current = document.getElementById("calcScreen").value;
+        if(current !== "") document.getElementById("calcScreen").value = parseFloat(current)/100;
+    } catch { alert("Invalid operation"); }
+}
+
+// Toggle calculator visibility
+function toggleCalculator() {
+    const calc = document.getElementById("calculator");
+    calc.style.display = (calc.style.display === "block") ? "none" : "block";
+}
+
+// Make calculator draggable
+dragElement(document.getElementById("calculator"));
+function dragElement(elmnt) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    elmnt.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        if(e.target.id !== "calculator-header") return; // drag only from header
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
     }
 }
 </script>
